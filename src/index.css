@@ -12,3 +12,9 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.excluded-date {
+  color: rgba(75, 39, 39, 0.378);
+  background: rgba(75, 39, 39, 0.378);
+  border: 3px solid rgb(177, 177, 177);
+}
