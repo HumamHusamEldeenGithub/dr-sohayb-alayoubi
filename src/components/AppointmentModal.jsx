@@ -2,13 +2,13 @@ import {
   Modal,
   DatePicker,
   Input,
-  TimePicker,
   Flex,
   notification,
   Button,
   Checkbox,
+  Select,
 } from "antd";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { UserOutlined, PhoneOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 import {
@@ -19,6 +19,7 @@ import {
 import moment from "moment";
 import dayjs from "dayjs";
 
+const { Option } = Select;
 
 export default function AppointmentModal({
   showModal,
@@ -38,19 +39,58 @@ export default function AppointmentModal({
     date: null,
     dateString: "",
   });
-  const [fromTime, setFromTime] = useState({
-    date: null,
-    dateString: "",
-  });
-  const [toTime, setToTime] = useState({
-    date: null,
-    dateString: "",
-  });
+  const [fromTime, setFromTime] = useState("");
+  const [toTime, setToTime] = useState("");
   const [isScheduled, setIsScheduled] = useState(false);
   const [patientAttended, setPatientAttended] = useState(false);
 
+  const timePickerOptions = useMemo(() => {
+    const options = [];
+    for (let hour = 11; hour <= 20; hour++) {
+      for (let minute = 0; minute < 60; minute += 30) {
+        const hour12 = hour > 12 ? hour - 12 : hour;
+        const ampm = hour >= 12 ? "PM" : "AM";
+        const timeStringValue = `${hour12.toString()}:${minute
+          .toString()
+          .padStart(2, "0")}`;
+        const timeStringKey = `${timeStringValue} ${ampm}`;
+        options.push({
+          value: timeStringKey,
+          label: timeStringKey,
+        });
+      }
+    }
+    console.log(options);
+    return options;
+  }, []);
+
+  function convertTo24Hour(time12h) {
+    try {
+      const [time, period] = time12h.split(" ");
+      const [hour, minute] = time.split(":");
+
+      let hour24;
+      if (period.toLowerCase() === "pm") {
+        hour24 = parseInt(hour, 10) + 12;
+        if (hour24 === 24) {
+          hour24 = 12;
+        }
+      } else {
+        hour24 = parseInt(hour, 10);
+        if (hour24 === 12) {
+          hour24 = 0;
+        }
+      }
+
+      return `${hour24.toString().padStart(2, "0")}:${minute}`;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   const formatDate = (date, time) => {
-    const dateTimeString = `${date}T${time}:00.000`;
+    const dateTimeString = `${date}T${convertTo24Hour(time)}:00.000`;
+    console.log(dateTimeString);
     return moment(dateTimeString, "YYYY-MM-DDTHH:mm:ss.SSS");
   };
 
@@ -60,8 +100,8 @@ export default function AppointmentModal({
     CreateAppointment({
       patientName: patientName,
       phoneNumber: phoneNumber,
-      startDate: formatDate(selectedDate.dateString, fromTime.dateString),
-      endDate: formatDate(selectedDate.dateString, toTime.dateString),
+      startDate: formatDate(selectedDate.dateString, fromTime),
+      endDate: formatDate(selectedDate.dateString, toTime),
     })
       .then(() => {
         setShouldFetchAppointments(true);
@@ -86,8 +126,8 @@ export default function AppointmentModal({
       id: appointmentId,
       patientName: patientName,
       phoneNumber: phoneNumber,
-      startDate: formatDate(selectedDate.dateString, fromTime.dateString),
-      endDate: formatDate(selectedDate.dateString, toTime.dateString),
+      startDate: formatDate(selectedDate.dateString, fromTime),
+      endDate: formatDate(selectedDate.dateString, toTime),
       isScheduled: isScheduled,
       appointmentCompleted: patientAttended,
     })
@@ -183,15 +223,11 @@ export default function AppointmentModal({
           dateString: startDate.format("YYYY-MM-DD"),
         });
 
-        setFromTime({
-          date: startDate,
-          dateString: startDate.format("HH:mm"),
-        });
+        const startHour = startDate.format("h:mm A");
+        const endHour = endDate.format("h:mm A");
 
-        setToTime({
-          date: endDate,
-          dateString: endDate.format("HH:mm"),
-        });
+        setFromTime(startHour);
+        setToTime(endHour);
 
         setIsScheduled(appointment.isScheduled ?? false);
         setPatientAttended(appointment.appointmentCompleted ?? false);
@@ -200,11 +236,6 @@ export default function AppointmentModal({
       }
     }
   }, [showModal]);
-
-  const minTime = dayjs(new Date()).set("hour", 11);
-  console.log(minTime);
-
-  const maxTime = dayjs(new Date()).set("hour", 20);
 
   return (
     <Modal
@@ -288,39 +319,27 @@ export default function AppointmentModal({
       <Flex justify="space-between">
         <InputDiv>
           <label htmlFor="toDatePicker">From Time :</label>{" "}
-          <TimePicker
-            showNow={false}
-            minuteStep={30}
-            format="HH:mm"
-            value={fromTime.date}
-            onChange={(timeRaw, timeStr) => {
-              setFromTime({
-                date: timeRaw,
-                dateString: timeStr,
-              });
+          <Select
+            defaultValue="11:00"
+            style={{ width: 120 }}
+            value={fromTime}
+            onChange={(value) => {
+              setFromTime(value);
             }}
-            needConfirm={false}
-            //dis
-          />
+            options={timePickerOptions}
+          ></Select>
         </InputDiv>
         <InputDiv>
           <label htmlFor="toDatePicker">To Time : </label>
-          <TimePicker
-            id="toDatePicker"
-            minDate={minTime}
-            maxDateDate={maxTime}
-            showNow={false}
-            minuteStep={30}
-            format="HH:mm"
-            value={toTime.date}
-            onChange={(timeRaw, timeStr) => {
-              setToTime({
-                date: timeRaw,
-                dateString: timeStr,
-              });
+          <Select
+            defaultValue="11:00"
+            style={{ width: 120 }}
+            value={toTime}
+            onChange={(value) => {
+              setToTime(value);
             }}
-            needConfirm={false}
-          />
+            options={timePickerOptions}
+          ></Select>
         </InputDiv>
       </Flex>
       <InputDiv>

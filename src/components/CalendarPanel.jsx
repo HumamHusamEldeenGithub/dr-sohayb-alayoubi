@@ -63,6 +63,14 @@ export default function CalendarPanel() {
 const PanelHeaderDiv = styled.div`
   display: flex;
   justify-content: space-between;
+  flex-wrap:wrap;
+  @media (max-width: 768px) {
+    /* Define styles for smaller screens here */
+    flex-direction: column;
+    align-items: center;
+    margin-top:10px;
+    margin-bottom:10px;
+  }
 `;
 
 const EventTypesDiv = styled.div`

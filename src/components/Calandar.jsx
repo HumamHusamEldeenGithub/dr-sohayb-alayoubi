@@ -5,6 +5,7 @@ import { Calendar, Views, momentLocalizer } from "react-big-calendar";
 import { GetAppointments, UpdateAppointment } from "../repository/appointment";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
+import { isMobile } from "react-device-detect";
 
 const DnDCalendar = withDragAndDrop(Calendar);
 
@@ -133,7 +134,7 @@ export default function AppointmentsCalander({
   return (
     <div className="myCustomHeight">
       <DnDCalendar
-        defaultView={Views.WEEK}
+        defaultView={isMobile ? Views.DAY : Views.WEEK}
         events={myEvents}
         localizer={localizer}
         onSelectEvent={handleSelectEvent}
@@ -142,14 +143,12 @@ export default function AppointmentsCalander({
         resizable={false}
         slotPropGetter={slotPropGetter}
         eventPropGetter={eventStyleGetter}
-        views={
-          {
-            month:false,
-            week:true,
-            day:true,
-            agenda:true
-          }
-        }
+        views={{
+          month: false,
+          week: true,
+          day: true,
+          agenda: true,
+        }}
         selectable
         popup
         // start time : 11:00 AM

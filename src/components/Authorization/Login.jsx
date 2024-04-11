@@ -127,8 +127,7 @@ const LoginPage = styled.div`
 `;
 
 const LoginWrapper = styled.div`
-  width: 100%;
-  max-width: 575px;
+  max-width: 80vw;
 `;
 
 const ErrorMessage = styled.p`
