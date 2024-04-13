@@ -13,7 +13,16 @@ async function SubmitLogin({ username, password }) {
   return response.data;
 }
 
-
-export {
-    SubmitLogin
+async function RegisterUser({ username, password, role }) {
+  const response = await Client.post({
+    path: `${authRoute}/register`,
+    payload: {
+      username: username,
+      password: password,
+      role: role,
+    },
+  });
+  return response.data;
 }
+
+export { SubmitLogin,RegisterUser };

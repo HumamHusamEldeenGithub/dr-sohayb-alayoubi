@@ -16,43 +16,69 @@ export default function AppointmentsCalander({
   setShouldFetchAppointments,
   setShowAppointmentModal,
 }) {
-  var currentDate = new Date();
+  var currentDate = useMemo(() => new Date(), []);
+  const dateRange = useMemo(() => {
+    const startOfLastMonth = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth() - 1,
+      1
+    );
+    const endOfNextMonth = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth() + 2,
+      0
+    );
 
-  var lastMonth = new Date(currentDate);
-  lastMonth.setDate(lastMonth.getDate() - 30);
+    return {
+      start: startOfLastMonth,
+      end: endOfNextMonth,
+    };
+  }, [currentDate]);
 
-  var nextYear = new Date(currentDate);
-  nextYear.setDate(nextYear.getDate() + 365);
-
+  const [calenderDateRange, setCalenderDateRange] = useState(dateRange);
   const [myEvents, setEvents] = useState([]);
 
-  const fetchAppointments = async (startDate, endDate) => {
-    try {
-      const appointments = await GetAppointments({
-        startDate: startDate,
-        endDate: endDate,
-      });
-      if (appointments !== null) {
-        const mappedEvents = appointments.map((appointment) => ({
-          id: appointment._id,
-          title: appointment.patientName,
-          start: moment(appointment.startDate).toDate(),
-          end: moment(appointment.endDate).toDate(),
-          phoneNumber: appointment.phoneNumber,
-          isScheduled: appointment.isScheduled,
-          appointmentCompleted: appointment.appointmentCompleted,
-        }));
-        setEvents(mappedEvents);
-      }
-      setShouldFetchAppointments(false);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
+  const fetchAppointments = useCallback(
+    async (startDate, endDate, append) => {
+      try {
+        const appointments = await GetAppointments({
+          startDate: startDate,
+          endDate: endDate,
+        });
+        if (appointments !== null) {
+          const mappedEvents = appointments.map((appointment) => ({
+            id: appointment._id,
+            title: appointment.patientName,
+            start: moment(appointment.startDate).toDate(),
+            end: moment(appointment.endDate).toDate(),
+            phoneNumber: appointment.phoneNumber,
+            isScheduled: appointment.isScheduled,
+            appointmentCompleted: appointment.appointmentCompleted,
+          }));
+          if (append) {
+            setEvents((prevAppointments) => {
+              const existingIds = new Set(
+                prevAppointments.map((app) => app.id)
+              );
 
-  useEffect(() => {
-    if (shouldFetchAppointments) fetchAppointments(lastMonth, nextYear);
-  }, [shouldFetchAppointments, fetchAppointments]);
+              const uniqueAppointments = mappedEvents.filter(
+                (app) => !existingIds.has(app.id)
+              );
+              console.log(uniqueAppointments);
+
+              return [...prevAppointments, ...uniqueAppointments];
+            });
+          } else {
+            setEvents(mappedEvents);
+          }
+        }
+        setShouldFetchAppointments(false);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    },
+    [setShouldFetchAppointments]
+  );
 
   const handleSelectSlot = useCallback(
     ({ start, end }) => {
@@ -64,7 +90,7 @@ export default function AppointmentsCalander({
         },
       });
     },
-    [setEvents]
+    [setShowAppointmentModal]
   );
 
   const handleSelectEvent = useCallback(
@@ -77,11 +103,39 @@ export default function AppointmentsCalander({
     [setShowAppointmentModal]
   );
 
+  const handleNavigate = async (date) => {
+    let startOfTheWeekView = new Date(date);
+    startOfTheWeekView.setDate(startOfTheWeekView.getDate() - 7);
+
+    if (startOfTheWeekView < calenderDateRange.start) {
+      console.log("found older date");
+      const startOfLastMonth = new Date(date);
+      startOfLastMonth.setMonth(startOfLastMonth.getMonth() - 1);
+      startOfLastMonth.setDate(1);
+
+      await fetchAppointments(startOfLastMonth, dateRange.start, true);
+
+      setCalenderDateRange({
+        start: startOfLastMonth,
+        end: calenderDateRange.end,
+      });
+    } else if (date > calenderDateRange.end) {
+      console.log("found newer date");
+      const endOfNextMonth = new Date(date);
+      endOfNextMonth.setMonth(endOfNextMonth.getMonth() + 2);
+      endOfNextMonth.setDate(0);
+
+      await fetchAppointments(calenderDateRange.end, endOfNextMonth, true);
+
+      setCalenderDateRange({
+        start: calenderDateRange.start,
+        end: endOfNextMonth,
+      });
+    }
+  };
+
   const moveEvent = useCallback(
     ({ event, start, end }) => {
-      console.log(event);
-      console.log(start);
-      console.log(end);
       UpdateAppointment({
         id: event.id,
         startDate: moment(start, "YYYY-MM-DDTHH:mm:ss.SSS"),
@@ -99,7 +153,7 @@ export default function AppointmentsCalander({
         return [...filtered, { ...existing, start, end }];
       });
     },
-    [setEvents]
+    [setEvents, setShouldFetchAppointments]
   );
 
   const slotPropGetter = (date) => {
@@ -110,9 +164,9 @@ export default function AppointmentsCalander({
       };
   };
 
-  const eventStyleGetter = (event, start, end, isSelected) => {
+  const eventStyleGetter = (event) => {
     const style = {
-      backgroundColor: "#3174ad",
+      backgroundColor: "#808080",
       borderRadius: "5px",
       color: "white",
       border: "none",
@@ -121,55 +175,58 @@ export default function AppointmentsCalander({
     if (event.appointmentCompleted) {
       style.backgroundColor = "#4caf50";
     } else if (event.isScheduled) {
-      style.backgroundColor = "#f57c00";
+      style.backgroundColor = "#3174ad";
     }
-
     return {
       style,
     };
   };
 
+  useEffect(() => {
+    if (shouldFetchAppointments)
+      fetchAppointments(calenderDateRange.start, calenderDateRange.end);
+  }, [shouldFetchAppointments, fetchAppointments, calenderDateRange]);
+
   console.log(myEvents);
 
   return (
-    <div className="myCustomHeight">
-      <DnDCalendar
-        defaultView={isMobile ? Views.DAY : Views.WEEK}
-        events={myEvents}
-        localizer={localizer}
-        onSelectEvent={handleSelectEvent}
-        onSelectSlot={handleSelectSlot}
-        onEventDrop={moveEvent}
-        resizable={false}
-        slotPropGetter={slotPropGetter}
-        eventPropGetter={eventStyleGetter}
-        views={{
-          month: false,
-          week: true,
-          day: true,
-          agenda: true,
-        }}
-        selectable
-        popup
-        // start time : 11:00 AM
-        min={
-          new Date(
-            currentDate.getFullYear(),
-            currentDate.getMonth(),
-            currentDate.getDate(),
-            11
-          )
-        }
-        // end time 8:00 PM
-        max={
-          new Date(
-            currentDate.getFullYear(),
-            currentDate.getMonth(),
-            currentDate.getDate(),
-            20
-          )
-        }
-      />
-    </div>
+    <DnDCalendar
+      defaultView={isMobile ? Views.DAY : Views.WEEK}
+      events={myEvents}
+      localizer={localizer}
+      onSelectEvent={handleSelectEvent}
+      onSelectSlot={handleSelectSlot}
+      onNavigate={handleNavigate}
+      onEventDrop={moveEvent}
+      resizable={false}
+      slotPropGetter={slotPropGetter}
+      eventPropGetter={eventStyleGetter}
+      views={{
+        month: false,
+        week: true,
+        day: true,
+        agenda: true,
+      }}
+      selectable
+      popup
+      // start time : 11:00 AM
+      min={
+        new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth(),
+          currentDate.getDate(),
+          11
+        )
+      }
+      // end time 8:00 PM
+      max={
+        new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth(),
+          currentDate.getDate(),
+          20
+        )
+      }
+    />
   );
 }

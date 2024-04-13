@@ -1,6 +1,7 @@
 import { Layout, Button } from "antd";
 import AppointmentsCalander from "./Calandar";
 import AppointmentModal from "./AppointmentModal";
+import { Clock } from "./Clock";
 import { useState } from "react";
 import styled from "styled-components";
 const { Content } = Layout;
@@ -14,6 +15,7 @@ export default function CalendarPanel() {
   return (
     <Layout>
       <Content>
+        <Clock />
         <PanelHeaderDiv>
           <EventTypesDiv>
             <EventTypeDiv>
@@ -21,7 +23,7 @@ export default function CalendarPanel() {
               <EventLabel>Default</EventLabel>
             </EventTypeDiv>
             <EventTypeDiv>
-              <EventTypeIcon style={{ backgroundColor: "#f57c00" }} />
+              <EventTypeIcon style={{ backgroundColor: "#3174ad" }} />
               <EventLabel>Scheduled</EventLabel>
             </EventTypeDiv>
             <EventTypeDiv>
@@ -63,13 +65,13 @@ export default function CalendarPanel() {
 const PanelHeaderDiv = styled.div`
   display: flex;
   justify-content: space-between;
-  flex-wrap:wrap;
+  flex-wrap: wrap;
   @media (max-width: 768px) {
     /* Define styles for smaller screens here */
     flex-direction: column;
     align-items: center;
-    margin-top:10px;
-    margin-bottom:10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
   }
 `;
 
@@ -87,12 +89,13 @@ const CreateAppointmetnDiv = styled.div`
 const EventTypeDiv = styled.div`
   display: flex;
   align-items: center;
-  margin-left: 10px;
+  margin-left: 5px;
+  margin-right: 5px;
 `;
 const EventTypeIcon = styled.div`
   width: 20px;
   height: 20px;
-  background-color: #3174ad;
+  background-color: #808080;
 
   border-radius: 5px;
 `;

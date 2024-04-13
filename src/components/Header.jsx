@@ -28,11 +28,13 @@ export default function HeaderHome() {
       
     >
       <LogoDiv>
-        <LogoImage src={"logo_header.png"} alt="logo" onClick={()=>navigate("/")}/>
+        <LogoImage src={"header_logo2.png"} alt="logo" onClick={()=>navigate("/")}/>
       </LogoDiv>
       <Menu
         theme="dark"
         mode="horizontal"
+        disableAutoFocusItem // Prevent auto focus on menu item
+        disableEffect // Disable the highlight effect
         defaultSelectedKeys={["/"]}
         items={items}
         style={{
@@ -55,6 +57,5 @@ const LogoDiv = styled.div`
 
 const LogoImage = styled.img`
 height: 80%;
-margin:autopx;
 border-radius: 5px;
 `;

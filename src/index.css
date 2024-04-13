@@ -52,3 +52,11 @@ code {
   align-items: flex-end;
   justify-content: center;
 }
+
+.login-logo{
+  display: flex;
+  width: 100%;
+  max-width: 500px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}

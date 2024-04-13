@@ -49,7 +49,7 @@ export default function Login({ setToken }) {
   return (
     <LoginPage>
       <LoginWrapper>
-        <img alt="logo" src="logo.png" style={{ width: "100%" }} />
+        <img alt="logo" src="main_logo2.png" className="login-logo"/>
         <Space direction="vertical" size="large" style={{ width: "100%" }}>
           <Form
             name="normal_login"
