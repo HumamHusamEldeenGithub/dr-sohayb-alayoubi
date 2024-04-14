@@ -33,8 +33,6 @@ export default function HeaderHome() {
       <Menu
         theme="dark"
         mode="horizontal"
-        disableAutoFocusItem // Prevent auto focus on menu item
-        disableEffect // Disable the highlight effect
         defaultSelectedKeys={["/"]}
         items={items}
         style={{

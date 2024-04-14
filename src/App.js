@@ -1,15 +1,12 @@
-
-import './App.css';
-import Dashboard from './components/Dashboard';
+import "./App.css";
+import Dashboard from "./components/Dashboard";
 import { useState, useEffect } from "react";
 import Client from "./core/client";
 import Cookies from "universal-cookie";
-import Login from './components/Authorization/Login';
-
-
+import Login from "./components/Authorization/Login";
+import { ConfigProvider } from "antd";
 
 function App() {
-
   const [token, setToken] = useState(null);
 
   useEffect(() => {
@@ -26,9 +23,16 @@ function App() {
   }
 
   return (
-    <div className="App">
-      <Dashboard/>
-    </div>
+    <ConfigProvider
+      theme={{
+        token: {
+          colorPrimary:
+            "linear-gradient(112deg, rgba(7,38,78,1) 0%, rgba(34,62,97,1) 99%)",
+        },
+      }}
+    >
+      <Dashboard />
+    </ConfigProvider>
   );
 }
 

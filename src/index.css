@@ -60,3 +60,8 @@ code {
   border-radius: 10px;
   margin-bottom: 20px;
 }
+
+.ant-menu-item-selected {
+  background-color: transparent !important;
+  color: inherit !important; /* Inherit default text color */
+}
