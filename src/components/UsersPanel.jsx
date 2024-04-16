@@ -3,6 +3,8 @@ import { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import { GetUsers } from "../repository/user";
 import UserModal from "./UserModal";
+import { PoweroffOutlined } from "@ant-design/icons";
+import Cookies from "universal-cookie";
 const { Content } = Layout;
 
 export default function UsersPanel() {
@@ -15,14 +17,18 @@ export default function UsersPanel() {
     user: null,
   });
 
-  const showErrorNotification = useCallback((message)=>{
-    api.error({
-      message: "Error",
-      description: message,
-    });
-  },[api]);
+  const showErrorNotification = useCallback(
+    (message) => {
+      api.error({
+        message: "Error",
+        description: message,
+      });
+    },
+    [api]
+  );
 
   const fetchUsers = useCallback(async () => {
+    setShouldFetchUsers(false);
     setLoadingUsers(true);
     GetUsers()
       .then((users) => {
@@ -40,11 +46,15 @@ export default function UsersPanel() {
         setLoadingUsers(false);
         setShouldFetchUsers(false);
       });
-  },[showErrorNotification]);
+  }, [showErrorNotification]);
 
-  useEffect(() => {
-    if (shouldFetchUsers) fetchUsers();
-  }, [shouldFetchUsers,fetchUsers]);
+  const handleLogout = async () => {
+    const cookies = new Cookies();
+    cookies.remove("token");
+    cookies.remove("refreshToken");
+    cookies.remove("username");
+    window.location.reload();
+  };
 
   const columns = [
     {
@@ -83,6 +93,9 @@ export default function UsersPanel() {
       align: "right",
     },
   ];
+
+  useEffect(() => fetchUsers, [fetchUsers,shouldFetchUsers]);
+
   return (
     <Layout>
       <Content>
@@ -93,6 +106,14 @@ export default function UsersPanel() {
           setShouldFetchUsers={setShouldFetchUsers}
         />
         <CreateUserDiv>
+          <Button
+            icon={<PoweroffOutlined />}
+            type="default"
+            style={{ marginRight: 10, color: "#c90000" }}
+            onClick={handleLogout}
+          >
+            Logout
+          </Button>
           <Button
             type="primary"
             onClick={() =>

@@ -1,8 +1,9 @@
 import axios from "axios";
 import Cookies from "universal-cookie";
-// https://appointement-scheduler-server.onrender.com
+import { SubmitLoginWithRefreshToken } from "../repository/auth";
+// 
 
-const baseUrl = "http://localhost:3001";
+const baseUrl = "https://appointement-scheduler-server.onrender.com";
 
 const instance = axios.create({
   timeout: 60000,
@@ -19,13 +20,39 @@ instance.interceptors.response.use(
   function (response) {
     return response;
   },
-  function (error) {
+  async function (error) {
     if (!error.response || !error.response.status.toString().startsWith("2")) {
       if (error.response && error.response.status === 401) {
         const cookies = new Cookies();
-        cookies.remove("token");
-        cookies.remove("username");
-        window.location.reload();
+        const refreshToken = cookies.get("refreshToken");
+        if (refreshToken && refreshToken !== "") {
+          try {
+            const response = await SubmitLoginWithRefreshToken({
+              refreshToken: refreshToken,
+            });
+            const cookies = new Cookies();
+            cookies.set("token", response.token, {
+              path: "/",
+              maxAge: 3600 * 3,
+            });
+            cookies.set("refreshToken", response.refreshToken, {
+              path: "/",
+              maxAge: 3600 * 30,
+            });
+            window.location.reload();
+          } catch (error) {
+            console.log(error);
+            cookies.remove("token");
+            cookies.remove("username");
+            cookies.remove("refreshToken");
+            window.location.reload();
+          }
+        } else {
+          cookies.remove("token");
+          cookies.remove("username");
+          cookies.remove("refreshToken");
+          window.location.reload();
+        }
       }
       throw error;
     }

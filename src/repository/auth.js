@@ -13,6 +13,16 @@ async function SubmitLogin({ username, password }) {
   return response.data;
 }
 
+async function SubmitLoginWithRefreshToken({ refreshToken }) {
+  const response = await Client.post({
+    path: `${authRoute}/login/refresh-token`,
+    payload: {
+      refreshToken: refreshToken,
+    },
+  });
+  return response.data;
+}
+
 async function RegisterUser({ username, password, role }) {
   const response = await Client.post({
     path: `${authRoute}/register`,
@@ -25,4 +35,4 @@ async function RegisterUser({ username, password, role }) {
   return response.data;
 }
 
-export { SubmitLogin,RegisterUser };
+export { SubmitLogin, SubmitLoginWithRefreshToken, RegisterUser };

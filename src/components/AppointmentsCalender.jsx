@@ -1,6 +1,7 @@
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import React, { useState, useCallback, useMemo, useEffect } from "react";
+import { notification } from "antd";
 import { Calendar, Views, momentLocalizer } from "react-big-calendar";
 import { GetAppointments, UpdateAppointment } from "../repository/appointment";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
@@ -11,7 +12,7 @@ const DnDCalendar = withDragAndDrop(Calendar);
 
 const localizer = momentLocalizer(moment);
 
-export default function AppointmentsCalander({
+export default function AppointmentsCalender({
   shouldFetchAppointments,
   setShouldFetchAppointments,
   setShowAppointmentModal,
@@ -35,8 +36,23 @@ export default function AppointmentsCalander({
     };
   }, [currentDate]);
 
+  const [api, contextHolder] = notification.useNotification();
   const [calenderDateRange, setCalenderDateRange] = useState(dateRange);
   const [myEvents, setEvents] = useState([]);
+
+  const showErrorNotification = useCallback((message) => {
+    api.error({
+      message: "Error",
+      description: message,
+    });
+  }, [api]);
+
+  const showSuccessNotification = useCallback((message) => {
+    api.success({
+      message: "Succeeded",
+      description: message,
+    });
+  }, [api]);
 
   const fetchAppointments = useCallback(
     async (startDate, endDate, append) => {
@@ -143,9 +159,16 @@ export default function AppointmentsCalander({
       })
         .then(() => {
           setShouldFetchAppointments(true);
+          showSuccessNotification("Appointment has been updated successfully");
         })
         .catch((err) => {
-          console.log(err);
+          var errorBody = "";
+          if (err.response && err.response.data) errorBody = err.response.data;
+          else
+            errorBody = { message: "an error has occured, please try again" };
+
+          showErrorNotification(errorBody.message);
+          console.error(err);
         });
       setEvents((prev) => {
         const existing = prev.find((ev) => ev.id === event.id) ?? {};
@@ -153,7 +176,12 @@ export default function AppointmentsCalander({
         return [...filtered, { ...existing, start, end }];
       });
     },
-    [setEvents, setShouldFetchAppointments]
+    [
+      setEvents,
+      setShouldFetchAppointments,
+      showSuccessNotification,
+      showErrorNotification,
+    ]
   );
 
   const slotPropGetter = (date) => {
@@ -190,43 +218,46 @@ export default function AppointmentsCalander({
   console.log(myEvents);
 
   return (
-    <DnDCalendar
-      defaultView={isMobile ? Views.DAY : Views.WEEK}
-      events={myEvents}
-      localizer={localizer}
-      onSelectEvent={handleSelectEvent}
-      onSelectSlot={handleSelectSlot}
-      onNavigate={handleNavigate}
-      onEventDrop={moveEvent}
-      resizable={false}
-      slotPropGetter={slotPropGetter}
-      eventPropGetter={eventStyleGetter}
-      views={{
-        month: false,
-        week: true,
-        day: true,
-        agenda: true,
-      }}
-      selectable
-      popup
-      // start time : 11:00 AM
-      min={
-        new Date(
-          currentDate.getFullYear(),
-          currentDate.getMonth(),
-          currentDate.getDate(),
-          11
-        )
-      }
-      // end time 8:00 PM
-      max={
-        new Date(
-          currentDate.getFullYear(),
-          currentDate.getMonth(),
-          currentDate.getDate(),
-          20
-        )
-      }
-    />
+    <div>
+      {contextHolder}
+      <DnDCalendar
+        defaultView={isMobile ? Views.DAY : Views.WEEK}
+        events={myEvents}
+        localizer={localizer}
+        onSelectEvent={handleSelectEvent}
+        onSelectSlot={handleSelectSlot}
+        onNavigate={handleNavigate}
+        onEventDrop={moveEvent}
+        resizable={false}
+        slotPropGetter={slotPropGetter}
+        eventPropGetter={eventStyleGetter}
+        views={{
+          month: false,
+          week: true,
+          day: true,
+          agenda: true,
+        }}
+        selectable
+        popup
+        // start time : 11:00 AM
+        min={
+          new Date(
+            currentDate.getFullYear(),
+            currentDate.getMonth(),
+            currentDate.getDate(),
+            11
+          )
+        }
+        // end time 8:00 PM
+        max={
+          new Date(
+            currentDate.getFullYear(),
+            currentDate.getMonth(),
+            currentDate.getDate(),
+            20
+          )
+        }
+      />
+    </div>
   );
 }

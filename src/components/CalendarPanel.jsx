@@ -1,5 +1,5 @@
 import { Layout, Button } from "antd";
-import AppointmentsCalander from "./Calandar";
+import AppointmentsCalender from "./AppointmentsCalender";
 import AppointmentModal from "./AppointmentModal";
 import { Clock } from "./Clock";
 import { useState } from "react";
@@ -52,7 +52,7 @@ export default function CalendarPanel() {
           setShowModal={setShowAppointmentModal}
           setShouldFetchAppointments={setShouldFetchAppointments}
         />
-        <AppointmentsCalander
+        <AppointmentsCalender
           shouldFetchAppointments={shouldFetchAppointments}
           setShouldFetchAppointments={setShouldFetchAppointments}
           setShowAppointmentModal={setShowAppointmentModal}
@@ -84,6 +84,7 @@ const CreateAppointmetnDiv = styled.div`
   justify-content: end;
   align-items: center;
   margin: 10px;
+  margin-right: 0;
 `;
 
 const EventTypeDiv = styled.div`

@@ -1,33 +1,35 @@
 import { useState } from "react";
-import { Button, Checkbox, Form, Input, Space } from "antd";
+import { Button, Input, Space } from "antd";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
-import { decodeToken } from "react-jwt";
 import styled from "styled-components";
 import Cookies from "universal-cookie";
 import { SubmitLogin } from "../../repository/auth";
 
-export default function Login({ setToken }) {
+export default function Login() {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
   const onFinish = async (values) => {
     setErrorMsg(null);
     setLoading(true);
-    const username = values.username.trim();
+
     SubmitLogin({
-      username: username,
-      password: values.password,
+      username: username.trim(),
+      password: password,
     })
       .then((response) => {
-        // const decodedToken = decodeToken(res.token);
-        // const decodedRefreshToken = decodeToken(res.refreshToken);
-
         const cookies = new Cookies();
         cookies.set("token", response.token, {
           path: "/",
           maxAge: 3600 * 3,
         });
+        cookies.set("refreshToken", response.refreshToken, {
+          path: "/",
+          maxAge: 3600 * 30,
+        });
         cookies.set("username", username, { path: "/", maxAge: 3600 * 3 });
-        setToken(response.token);
         window.location.reload();
       })
       .catch((error) => {
@@ -46,73 +48,60 @@ export default function Login({ setToken }) {
     console.error("Failed:", errorInfo);
     setErrorMsg(errorInfo);
   };
+
+  const handleSubmit = async (values) => {
+    try {
+      await onFinish(values);
+    } catch (errorInfo) {
+      onFinishFailed(errorInfo);
+    }
+  };
+
+
   return (
     <LoginPage>
       <LoginWrapper>
-        <img alt="logo" src="main_logo2.png" className="login-logo"/>
+        <img alt="logo" src="main_logo2.png" className="login-logo" />
         <Space direction="vertical" size="large" style={{ width: "100%" }}>
-          <Form
-            name="normal_login"
-            className="login-form"
-            initialValues={{
-              remember: true,
-            }}
-            onFinish={onFinish}
-            onFinishFailed={onFinishFailed}
-            size="large"
+          <Input
+            prefix={<UserOutlined style={{ color: "#1890FF" }} />}
+            placeholder="Username"
+            name="password"
+            required
+            style={{ fontSize: "1.2em", fontFamily: "bold" }}
+            onChange={(e) => setUsername(e.target.value)}
+            onPressEnter={handleSubmit}
+          />
+          <Space
+            direction="vertical"
+            size="small"
+            style={{ width: "100%", position: "relative" }}
           >
-            <Form.Item
-              name="username"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your Username!",
-                },
-              ]}
-            >
-              <Input
-                prefix={<UserOutlined style={{ color: "#1890FF" }} />}
-                placeholder="Username"
-              />
-            </Form.Item>
-            <Space
-              direction="vertical"
-              size="small"
-              style={{ width: "100%", position: "relative" }}
-            >
-              <Form.Item
-                style={{ marginBottom: 10 }}
-                name="password"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input your Password!",
-                  },
-                ]}
-              >
-                <Input
-                  prefix={<LockOutlined style={{ color: "#1890FF" }} />}
-                  type="password"
-                  placeholder="Password"
-                />
-              </Form.Item>
-              {errorMsg && (
-                <ErrorMessage style={{ color: "red" }}>
-                  {errorMsg.message}
-                </ErrorMessage>
-              )}
-            </Space>
-            <Form.Item>
-              <Button
-                loading={loading}
-                type="primary"
-                htmlType="submit"
-                style={{ width: "100%", marginTop: "20px" }}
-              >
-                Sign in
-              </Button>
-            </Form.Item>
-          </Form>
+            <Input
+              prefix={<LockOutlined style={{ color: "#1890FF" }} />}
+              type="password"
+              placeholder="Password"
+              style={{ fontSize: "1.2em", fontFamily: "bold" }}
+              onChange={(e) => setPassword(e.target.value)}
+              onPressEnter={handleSubmit}
+            />
+
+            {errorMsg && (
+              <ErrorMessage style={{ color: "red" }}>
+                {errorMsg.message}
+              </ErrorMessage>
+            )}
+          </Space>
+          <Button
+            loading={loading}
+            type="primary"
+            style={{
+              width: "100%",
+            }}
+            onClick={handleSubmit}
+          >
+            Sign in
+          </Button>
         </Space>
       </LoginWrapper>
     </LoginPage>

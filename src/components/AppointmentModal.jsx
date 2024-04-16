@@ -8,7 +8,7 @@ import {
   Checkbox,
   Select,
 } from "antd";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { UserOutlined, PhoneOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 import {
@@ -19,15 +19,11 @@ import {
 import moment from "moment";
 import dayjs from "dayjs";
 
-const { Option } = Select;
-
 export default function AppointmentModal({
   showModal,
   setShowModal,
   setShouldFetchAppointments,
 }) {
-  var currentDate = new Date();
-
   const [api, contextHolder] = notification.useNotification();
   const [confirmCreateLoading, setConfirmCreateLoading] = useState(false);
   const [confirmUpdateLoading, setConfirmUpdateLoading] = useState(false);
@@ -60,7 +56,6 @@ export default function AppointmentModal({
         });
       }
     }
-    console.log(options);
     return options;
   }, []);
 
@@ -172,19 +167,25 @@ export default function AppointmentModal({
     setShowModal(false);
   };
 
-  function showErrorNotification(message) {
-    api.error({
-      message: "Error",
-      description: message,
-    });
-  }
+  const showErrorNotification = useCallback(
+    (message) => {
+      api.error({
+        message: "Error",
+        description: message,
+      });
+    },
+    [api]
+  );
 
-  function showSuccessNotification(message) {
-    api.success({
-      message: "Succeeded",
-      description: message,
-    });
-  }
+  const showSuccessNotification = useCallback(
+    (message) => {
+      api.success({
+        message: "Succeeded",
+        description: message,
+      });
+    },
+    [api]
+  );
 
   function clearModal() {
     setAppointmentId("");

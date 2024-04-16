@@ -1,11 +1,10 @@
 import { Layout, Menu } from "antd";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 const { Header } = Layout;
 
 export default function HeaderHome() {
   const navigate = useNavigate();
-  const location = useLocation();
 
   function getItem(label, key, icon, children) {
     return {
@@ -25,10 +24,13 @@ export default function HeaderHome() {
         display: "flex",
         alignItems: "center",
       }}
-      
     >
       <LogoDiv>
-        <LogoImage src={"header_logo2.png"} alt="logo" onClick={()=>navigate("/")}/>
+        <LogoImage
+          src={"header_logo3.png"}
+          alt="logo"
+          onClick={() => navigate("/")}
+        />
       </LogoDiv>
       <Menu
         theme="dark"
@@ -49,11 +51,10 @@ const LogoDiv = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-right: 10px;
   cursor: pointer;
 `;
 
 const LogoImage = styled.img`
-height: 80%;
-border-radius: 5px;
+  height: 100%;
+  margin-left: 16px;
 `;
