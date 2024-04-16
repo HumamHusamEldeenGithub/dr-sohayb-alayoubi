@@ -28,7 +28,6 @@ export default function UsersPanel() {
   );
 
   const fetchUsers = useCallback(async () => {
-    setShouldFetchUsers(false);
     setLoadingUsers(true);
     GetUsers()
       .then((users) => {
@@ -94,7 +93,9 @@ export default function UsersPanel() {
     },
   ];
 
-  useEffect(() => fetchUsers, [fetchUsers,shouldFetchUsers]);
+  useEffect(() => {
+    if (shouldFetchUsers) fetchUsers();
+  }, [shouldFetchUsers]);
 
   return (
     <Layout>
