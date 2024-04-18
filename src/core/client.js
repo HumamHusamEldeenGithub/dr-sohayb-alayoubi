@@ -3,7 +3,7 @@ import Cookies from "universal-cookie";
 import { SubmitLoginWithRefreshToken } from "../repository/auth";
 // https://appointement-scheduler-server.onrender.com/api
 
-const baseUrl = "https://appointement-scheduler-server.onrender.com/api";
+const baseUrl = "https://dr-sohayb-alayoubi-server.cyclic.app/api";
 
 const instance = axios.create({
   timeout: 60000,
