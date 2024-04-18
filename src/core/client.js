@@ -1,9 +1,9 @@
 import axios from "axios";
 import Cookies from "universal-cookie";
 import { SubmitLoginWithRefreshToken } from "../repository/auth";
-// 
+// https://appointement-scheduler-server.onrender.com/api
 
-const baseUrl = "https://appointement-scheduler-server.onrender.com";
+const baseUrl = "https://appointement-scheduler-server.onrender.com/api";
 
 const instance = axios.create({
   timeout: 60000,
