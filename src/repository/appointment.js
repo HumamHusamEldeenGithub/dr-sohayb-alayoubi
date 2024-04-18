@@ -1,6 +1,6 @@
 import Client from "../core/client";
 
-const appointmentsRoute = "/api/appointments";
+const appointmentsRoute = "/appointments";
 
 async function CreateAppointment({
   patientName,
