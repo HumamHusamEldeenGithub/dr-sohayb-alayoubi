@@ -61,7 +61,7 @@ export default function Login() {
   return (
     <LoginPage>
       <LoginWrapper>
-        <img alt="logo" src="main_logo2.png" className="login-logo" />
+        <img alt="logo" src="logo.png" className="login-logo" />
         <Space direction="vertical" size="large" style={{ width: "100%" }}>
           <Input
             prefix={<UserOutlined style={{ color: "#1890FF" }} />}

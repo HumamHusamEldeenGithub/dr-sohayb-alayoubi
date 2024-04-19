@@ -95,7 +95,7 @@ export default function UsersPanel() {
 
   useEffect(() => {
     if (shouldFetchUsers) fetchUsers();
-  }, [shouldFetchUsers]);
+  }, [shouldFetchUsers,fetchUsers]);
 
   return (
     <Layout>

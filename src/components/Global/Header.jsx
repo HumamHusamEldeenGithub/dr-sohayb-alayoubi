@@ -27,7 +27,7 @@ export default function HeaderHome() {
     >
       <LogoDiv>
         <LogoImage
-          src={"header_logo3.png"}
+          src={"header_logo.png"}
           alt="logo"
           onClick={() => navigate("/")}
         />

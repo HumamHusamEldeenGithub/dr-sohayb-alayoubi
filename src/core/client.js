@@ -1,7 +1,6 @@
 import axios from "axios";
 import Cookies from "universal-cookie";
 import { SubmitLoginWithRefreshToken } from "../repository/auth";
-// https://appointement-scheduler-server.onrender.com/api
 
 const baseUrl = "https://dr-sohayb-alayoubi-server.cyclic.app/api";
 
