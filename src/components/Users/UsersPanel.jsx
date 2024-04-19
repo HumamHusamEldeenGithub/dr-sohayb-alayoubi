@@ -1,7 +1,7 @@
 import { Layout, Table, Tag, notification, Button } from "antd";
 import { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
-import { GetUsers } from "../repository/user";
+import { GetUsers } from "../../repository/user";
 import UserModal from "./UserModal";
 import { PoweroffOutlined } from "@ant-design/icons";
 import Cookies from "universal-cookie";

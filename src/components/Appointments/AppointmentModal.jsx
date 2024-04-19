@@ -15,7 +15,7 @@ import {
   CreateAppointment,
   DeleteAppointment,
   UpdateAppointment,
-} from "../repository/appointment";
+} from "../../repository/appointment";
 import moment from "moment";
 import dayjs from "dayjs";
 

@@ -14,6 +14,9 @@ function App() {
           Select: {
             optionSelectedBg:"#e6f4ff"
           },
+          Layout:{
+            headerPadding:5
+          }
         },
       }}
     >

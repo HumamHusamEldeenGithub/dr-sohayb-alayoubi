@@ -56,5 +56,4 @@ const LogoDiv = styled.div`
 
 const LogoImage = styled.img`
   height: 100%;
-  margin-left: 16px;
 `;

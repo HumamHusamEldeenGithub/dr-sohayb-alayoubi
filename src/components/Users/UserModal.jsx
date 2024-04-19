@@ -2,8 +2,8 @@ import { Modal, Input, notification, Button, Select } from "antd";
 import { useEffect, useState } from "react";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import styled from "styled-components";
-import { RegisterUser } from "../repository/auth";
-import { DeleteUser, UpdateUser } from "../repository/user";
+import { RegisterUser } from "../../repository/auth";
+import { DeleteUser, UpdateUser } from "../../repository/user";
 
 export default function UserModal({
   showModal,

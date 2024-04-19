@@ -1,9 +1,9 @@
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import React, { useState, useCallback, useMemo, useEffect } from "react";
-import { notification } from "antd";
+import { notification,Spin } from "antd";
 import { Calendar, Views, momentLocalizer } from "react-big-calendar";
-import { GetAppointments, UpdateAppointment } from "../repository/appointment";
+import { GetAppointments, UpdateAppointment } from "../../repository/appointment";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
 import { isMobile } from "react-device-detect";
@@ -39,6 +39,7 @@ export default function AppointmentsCalender({
   const [api, contextHolder] = notification.useNotification();
   const [calenderDateRange, setCalenderDateRange] = useState(dateRange);
   const [myEvents, setEvents] = useState([]);
+  const [loadingAppointments, setLoadingAppointments] = useState(false);
 
   const showErrorNotification = useCallback((message) => {
     api.error({
@@ -56,6 +57,7 @@ export default function AppointmentsCalender({
 
   const fetchAppointments = useCallback(
     async (startDate, endDate, append) => {
+      setLoadingAppointments(true);
       try {
         const appointments = await GetAppointments({
           startDate: startDate,
@@ -92,6 +94,7 @@ export default function AppointmentsCalender({
       } catch (error) {
         console.error("Error fetching data:", error);
       }
+      setLoadingAppointments(false);
     },
     [setShouldFetchAppointments]
   );
@@ -218,7 +221,7 @@ export default function AppointmentsCalender({
   console.log(myEvents);
 
   return (
-    <div>
+    <Spin spinning={loadingAppointments}>
       {contextHolder}
       <DnDCalendar
         defaultView={isMobile ? Views.DAY : Views.WEEK}
@@ -258,6 +261,6 @@ export default function AppointmentsCalender({
           )
         }
       />
-    </div>
+    </Spin>
   );
 }

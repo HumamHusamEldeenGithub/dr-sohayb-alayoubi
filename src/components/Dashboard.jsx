@@ -1,13 +1,13 @@
 import { Layout as AntLayout } from "antd";
-import HeaderHome from "./Header";
+import HeaderHome from "./Global/Header";
 import { Route, Routes, Navigate } from "react-router-dom";
-import CalendarPanel from "./CalendarPanel";
-import UsersPanel from "./UsersPanel";
+import CalendarPanel from "./Appointments/CalendarPanel";
+import UsersPanel from "./Users/UsersPanel";
 import Login from "./Authorization/Login";
 import { useState, useEffect } from "react";
 import Client from "../core/client";
 import Cookies from "universal-cookie";
-import LoadingPage from "./Loading";
+import LoadingPage from "./Global/Loading";
 import { SubmitLoginWithRefreshToken } from "../repository/auth";
 
 const modes = {

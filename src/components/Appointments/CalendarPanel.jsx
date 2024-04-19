@@ -1,7 +1,7 @@
 import { Layout, Button } from "antd";
 import AppointmentsCalender from "./AppointmentsCalender";
 import AppointmentModal from "./AppointmentModal";
-import { Clock } from "./Clock";
+import { Clock } from "../Global/Clock";
 import { useState } from "react";
 import styled from "styled-components";
 const { Content } = Layout;
