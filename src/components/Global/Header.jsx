@@ -1,10 +1,12 @@
 import { Layout, Menu } from "antd";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 const { Header } = Layout;
 
 export default function HeaderHome() {
   const navigate = useNavigate();
+  const [selectedKey, setSelectedKey] = useState("/");
 
   function getItem(label, key, icon, children) {
     return {
@@ -12,7 +14,10 @@ export default function HeaderHome() {
       icon,
       children,
       label,
-      onClick: ({ key }) => navigate(key),
+      onClick: ({ key }) => {
+        navigate(key);
+        setSelectedKey(key);
+      },
     };
   }
 
@@ -29,13 +34,17 @@ export default function HeaderHome() {
         <LogoImage
           src={"header_logo.png"}
           alt="logo"
-          onClick={() => navigate("/")}
+          onClick={() => {
+            navigate("/");
+            setSelectedKey("/");
+          }}
         />
       </LogoDiv>
       <Menu
         theme="dark"
         mode="horizontal"
         defaultSelectedKeys={["/"]}
+        selectedKeys={[selectedKey]}
         items={items}
         style={{
           flex: 1,

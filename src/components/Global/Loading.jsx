@@ -16,7 +16,7 @@ export default function LoadingPage({ loadingCaption }) {
         />
       </LogoDiv>
       <Flex justify="center" align="center">
-        <div class="lds-roller">
+        <div className="lds-roller">
           <div></div>
           <div></div>
           <div></div>

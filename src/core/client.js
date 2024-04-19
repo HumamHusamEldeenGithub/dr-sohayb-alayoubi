@@ -2,7 +2,7 @@ import axios from "axios";
 import Cookies from "universal-cookie";
 import { SubmitLoginWithRefreshToken } from "../repository/auth";
 
-const baseUrl = "https://dr-sohayb-alayoubi-server.cyclic.app/api";
+const baseUrl = "https://appointement-scheduler-server.onrender.com/api";
 
 const instance = axios.create({
   timeout: 60000,
